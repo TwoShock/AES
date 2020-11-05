@@ -14,6 +14,9 @@ class AES():
         self.__keys = self.__keyExpansion()
 
     def __transformInputToMatrix(self,input:str)->np.array:
+        '''
+        Transforms input to n by n matrix.
+        '''
         inputMatrix = [input[i:i+2] for i in range (0,len(input),2)]
         inputMatrix = np.array(inputMatrix).reshape(4,4,order='F')
         return inputMatrix
@@ -26,26 +29,31 @@ class AES():
         pad = np.vectorize(lambda x : '0' + x if len(x) == 1 else x)
         self.__state = pad(self.__state)
     
-    def __byteSubstitution(self):
+    def __byteSubstitution(self,inv = False):
         '''
         Performs byte substitution on current state.
         '''
-        sub = np.vectorize(lambda x : self.__sBox[int(x[0],16)][int(x[1],16)])
+        sBox = self.__sBox if inv == False  else self.__invSBox
+        sub = np.vectorize(lambda x : sBox[int(x[0],16)][int(x[1],16)])
         self.__state = sub(self.__state)
 
-    def __shiftRows(self):
+    def __shiftRows(self,inv = False):
        '''
        Performs shift rows on current state.
        '''
        for i in range(4):
-            self.__state[i] = np.roll(self.__state[i],-i)
+           if(inv):
+               self.__state[i] = np.roll(self.__state[i],i)
+           else:
+               self.__state[i] = np.roll(self.__state[i],-i)
+               
 
-    def __mixColumns(self):
+    def __mixColumns(self,inv = False):
         '''
         Performs mix column on current state.
         '''
         newState = [['00000000' for j in range(len(self.__state))]for i in range(len(self.__state))]
-        mCols = self.__mCols 
+        mCols = self.__mCols if inv == False else self.__invMCols
         for i in range(len(self.__state)):
             for j in range(len(self.__state)):
                 for k in range(len(self.__state)):
@@ -59,6 +67,9 @@ class AES():
         self.__state = pad(hexify(newState))
 
     def __xorVectors(self,v1,v2):
+        '''
+        Helper funciton for aes mix columns. It xors the results of the hex vectors and returns the hex vector result.
+        '''
         out = []
         for i,v in enumerate(v1):
             b1 = convertHexToBinary(v).zfill(8)
@@ -69,6 +80,9 @@ class AES():
         return np.array(out)
 
     def __keyExpansion(self):
+        '''
+        Handles key expansion for both encryption and decryption
+        '''
         w = [self.__key[:,i] for i in range(len(self.__key))]
         sub = np.vectorize(lambda x : self.__sBox[int(x[0],16)][int(x[1],16)])
         j = 0
@@ -82,6 +96,7 @@ class AES():
         keys = [np.array(w[i:i+4]) for i in range(0,len(w),4)]
         keys = [np.transpose(keys[i]) for i in range(len(keys))]
         return keys
+    
     def encrypt(self):
         '''
         Performs the 10 round encryption of AES.
@@ -95,10 +110,30 @@ class AES():
             if(i != 10):
                 self.__mixColumns()
             self.__addRoundKey(self.__keys[i])
+            print(self.__state)
         self.__state = state
         self.__key == key
-key = '5468617473206D79204B756E67204675'
-msg = '54776F204F6E65204E696E652054776F'
+
+    def decrypt(self):
+        '''
+        Performs 10 round decryption of AES.
+        '''
+        state = self.__state
+        key = self.__state
+
+        keys = self.__keys[::-1]
+        self.__addRoundKey(keys[0])
+        for i in range(1,11):
+            self.__byteSubstitution(inv = True)
+            self.__shiftRows(inv = True)
+            if(i != 10):
+                self.__mixColumns(inv = True)
+            self.__addRoundKey(keys[i])
+        self.__state = state
+        self.__key == key
+        
+key = '0f1571c947d9e8590cb7add6af7f6798'
+msg = '0123456789abcdeffedcba9876543210'
 aes = AES(key,msg)
 aes.encrypt()
 
