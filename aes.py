@@ -153,7 +153,4 @@ class AES():
             self.__appendMatrixToOutput(self.__state)
         self.__state = state
         self.__key == key
-        
-key = '0f1571c947d9e8590cb7add6af7f6798'
-msg = '0123456789abcdeffedcba9876543210'
 

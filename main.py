@@ -49,7 +49,7 @@ class MainWindow(QWidget):
         try:
             if(len(self.__output.toPlainText()) > 0):
                 self.__output.document().clear()
-            aes = AES('0f1571c947d9e8590cb7add6af7f6798','0123456789abcdeffedcba9876543210')
+            aes = AES(self.__msgEdit.text(),self.__keyEdit.text())
             aes.decrypt()
             self.__output.document().setPlainText(aes.getOutput())
         except:
@@ -59,7 +59,7 @@ class MainWindow(QWidget):
         try:
             if(len(self.__output.toPlainText()) > 0):
                 self.__output.document().clear()
-            aes = AES('0f1571c947d9e8590cb7add6af7f6798','0123456789abcdeffedcba9876543210')
+            aes = AES(self.__msgEdit.text(),self.__keyEdit.text())
             aes.encrypt()
             self.__output.document().setPlainText(aes.getOutput())
         except:
