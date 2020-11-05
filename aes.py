@@ -12,7 +12,7 @@ class AES():
         self.__rcon = ['01','02','04','08','10','20','40','80','1b','36']
         self.__rconVectors = [[r,'00','00','00'] for r in self.__rcon ]
         self.__keys = self.__keyExpansion()
-
+        self.__output = ''
     def __transformInputToMatrix(self,input:str)->np.array:
         '''
         Transforms input to n by n matrix.
@@ -96,21 +96,36 @@ class AES():
         keys = [np.array(w[i:i+4]) for i in range(0,len(w),4)]
         keys = [np.transpose(keys[i]) for i in range(len(keys))]
         return keys
-    
+    def __appendMatrixToOutput(self,matrix):
+        '''
+        appends item to current output
+        '''
+        for i in range(len(matrix)):
+            for j in range(len(matrix)):
+                self.__output += f'{matrix[i][j]} '
+            self.__output +=f'\n'
+    def getOutput(self):
+       return self.__output 
     def encrypt(self):
         '''
         Performs the 10 round encryption of AES.
         '''
         state = self.__state
         key = self.__key
+        self.__output += 'Performing AES Encryption...\n'
+        self.__output += 'Current Key:\n'
+        self.__appendMatrixToOutput(self.__key)
         self.__addRoundKey(self.__keys[0])
         for i in range(1,11):
+            self.__output += '\nCurrent Key:\n'
+            self.__appendMatrixToOutput(self.__keys[i])
             self.__byteSubstitution()
             self.__shiftRows()
             if(i != 10):
                 self.__mixColumns()
             self.__addRoundKey(self.__keys[i])
-            print(self.__state)
+            self.__output += f'\nResult of Round {i}:\n'
+            self.__appendMatrixToOutput(self.__state)
         self.__state = state
         self.__key == key
 
@@ -123,17 +138,22 @@ class AES():
 
         keys = self.__keys[::-1]
         self.__addRoundKey(keys[0])
+        self.__output += 'Performing AES Decryption...\n'
+        self.__output += 'Current Key:\n'
+        self.__appendMatrixToOutput(self.__key)
         for i in range(1,11):
+            self.__output += '\nCurrent Key:\n'
+            self.__appendMatrixToOutput(self.__keys[i])
             self.__byteSubstitution(inv = True)
             self.__shiftRows(inv = True)
             if(i != 10):
                 self.__mixColumns(inv = True)
             self.__addRoundKey(keys[i])
+            self.__output += f'\nResult of Round {i}:\n'
+            self.__appendMatrixToOutput(self.__state)
         self.__state = state
         self.__key == key
         
 key = '0f1571c947d9e8590cb7add6af7f6798'
 msg = '0123456789abcdeffedcba9876543210'
-aes = AES(key,msg)
-aes.encrypt()
 

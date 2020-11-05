@@ -1,0 +1,54 @@
+*{
+    font-size:16px;
+    font-family:Helvetica;
+}
+QWidget{
+    background-color:#ECE2D0;
+}
+QPushButton{
+    color:white;
+    font-weight:bold;
+    font-size:18px;
+    padding:1em;
+    border-radius: 15%;
+    width:150px;
+    height:20px;
+    margin:0.2em;
+
+}
+QPushButton#encryptBtn{
+    background-color:#5C80BC;
+    width:100px;
+}
+QPushButton#encryptBtn:hover{
+    background-color: #4367a3;
+}
+QPushButton#decryptBtn{
+    background-color:#E3655B;
+    width:100px;
+}
+QPushButton#decryptBtn:hover{
+    background-color:#cc5b52;
+}
+QPushButton#copyBtn{
+    background-color:#9FC490;
+}
+QPushButton#copyBtn:hover{
+    background-color:#7f9d73;
+}
+QLabel{
+    font-weight:bold;
+    margin-right:10px;
+}
+QLineEdit{
+    padding:0.5em;
+    font-weight:bold;
+    border-bottom:1px solid black;
+    border-radius:1px;
+    margin-bottom:10px;
+}
+QTextEdit{
+    border:1px solid black;
+    border-radius:5%;
+    font-weight:bold;
+}
