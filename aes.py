@@ -115,15 +115,25 @@ class AES():
         self.__output += 'Performing AES Encryption...\n'
         self.__output += 'Current Key:\n'
         self.__appendMatrixToOutput(self.__key)
+        self.__output +='\nAfter Intial add round key:\n'
+        self.__appendMatrixToOutput(self.__state)
         self.__addRoundKey(self.__keys[0])
         for i in range(1,11):
             self.__output += '\nCurrent Key:\n'
             self.__appendMatrixToOutput(self.__keys[i])
             self.__byteSubstitution()
+            self.__output += '\nAfter Byte substitution:\n'
+            self.__appendMatrixToOutput(self.__state)
+            self.__output += '\nAfter Shift Rows:\n'
             self.__shiftRows()
+            self.__appendMatrixToOutput(self.__state)
             if(i != 10):
+                self.__output += '\nAfter Mix Columns:\n'
                 self.__mixColumns()
+                self.__appendMatrixToOutput(self.__state)
+            self.__output += '\nAfter Add Round Key:\n'
             self.__addRoundKey(self.__keys[i])
+            self.__appendMatrixToOutput(self.__keys[i])
             self.__output += f'\nResult of Round {i}:\n'
             self.__appendMatrixToOutput(self.__state)
         self.__state = state
@@ -141,14 +151,24 @@ class AES():
         self.__output += 'Performing AES Decryption...\n'
         self.__output += 'Current Key:\n'
         self.__appendMatrixToOutput(self.__key)
+        self.__output +='\nAfter Intial add round key:\n'
+        self.__appendMatrixToOutput(self.__state)
         for i in range(1,11):
             self.__output += '\nCurrent Key:\n'
             self.__appendMatrixToOutput(self.__keys[i])
-            self.__byteSubstitution(inv = True)
+            self.__byteSubstitution(inv=True)
+            self.__output += '\nAfter Inverse Byte substitution:\n'
+            self.__appendMatrixToOutput(self.__state)
+            self.__output += '\nAfter Inverse Shift Rows:\n'
             self.__shiftRows(inv = True)
+            self.__appendMatrixToOutput(self.__state)
             if(i != 10):
-                self.__mixColumns(inv = True)
-            self.__addRoundKey(keys[i])
+                self.__output += '\nAfter Inverse Mix Columns:\n'
+                self.__mixColumns(inv=True)
+                self.__appendMatrixToOutput(self.__state)
+            self.__output += '\nAfter Add Round Key:\n'
+            self.__addRoundKey(self.__keys[i])
+            self.__appendMatrixToOutput(self.__keys[i])
             self.__output += f'\nResult of Round {i}:\n'
             self.__appendMatrixToOutput(self.__state)
         self.__state = state
